@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 import br.com.jamezmayke.gestaobarartesanal.enums.StatusPedido;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -14,6 +15,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -23,9 +26,11 @@ public class Pedido {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @ManyToOne
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
 
+    @ManyToOne
     @JoinColumn(name = "mesa_id")
     private Mesa mesa;
     
@@ -34,7 +39,8 @@ public class Pedido {
     @Enumerated(EnumType.STRING)
     private StatusPedido statusPedido;
 
-    private List<ItemPedido> itens = new ArrayList<>();
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ItemPedido> itens;
 
     private BigDecimal valorTotal;
 
@@ -46,6 +52,7 @@ public class Pedido {
         this.mesa = mesa;
         this.dataHora = LocalDateTime.now();
         this.statusPedido = StatusPedido.ABERTO;
+        this.itens = new ArrayList<>();
         this.valorTotal = BigDecimal.ZERO;
     }
 
